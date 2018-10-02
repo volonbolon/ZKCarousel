@@ -8,8 +8,12 @@
 
 import UIKit
 
+public protocol ZKCarouselDelegate {
+    func slideSelected(slide: ZKCarouselSlide)
+}
+
 final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
-    
+    public weak var delegate: ZKCarouselDelegate?
     
     public var slides : [ZKCarouselSlide] = [] {
         didSet {
@@ -75,7 +79,7 @@ final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICol
         NSLayoutConstraint(item: pageControl, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -20).isActive = true
         NSLayoutConstraint(item: pageControl, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1.0, constant: -5).isActive = true
         NSLayoutConstraint(item: pageControl, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 25).isActive = true
-        self.bringSubviewToFront(pageControl)
+        self.bringSubview(toFront: pageControl)
     }
     
     @objc private func tapGestureHandler(tap: UITapGestureRecognizer?) {
@@ -85,13 +89,18 @@ final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICol
         let visiblePoint = CGPoint(x: visibleRect.midX, y: visibleRect.midY)
         let visibleIndexPath: IndexPath = collectionView.indexPathForItem(at: visiblePoint) ?? IndexPath(item: 0, section: 0)
         let index = visibleIndexPath.item
+        var indexPathItem = index + 1
 
         if index == (slides.count-1) {
-            let indexPathToShow = IndexPath(item: 0, section: 0)
-            self.collectionView.selectItem(at: indexPathToShow, animated: true, scrollPosition: .centeredHorizontally)
-        } else {
-            let indexPathToShow = IndexPath(item: (index + 1), section: 0)
-            self.collectionView.selectItem(at: indexPathToShow, animated: true, scrollPosition: .centeredHorizontally)
+            indexPathItem = 0
+        }
+
+        let indexPathToShow = IndexPath(item: indexPathItem, section: 0)
+        self.collectionView.selectItem(at: indexPathToShow, animated: true, scrollPosition: .centeredHorizontally)
+
+        if tap != nil, let delegate = self.delegate {
+            let slide = self.slides[indexPathItem]
+            delegate.slideSelected(slide: slide)
         }
     }
     
