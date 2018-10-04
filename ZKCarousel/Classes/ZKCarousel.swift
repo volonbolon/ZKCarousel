@@ -8,7 +8,13 @@
 
 import UIKit
 
+public protocol ZKCarouselDelegate: class {
+    func imageViewTapped(carousel: ZKCarousel, imageView: UIImageView)
+}
+
 final public class ZKCarousel: UIView {
+    public weak var delegate: ZKCarouselDelegate?
+
     private lazy var tapGesture : UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler(tap:)))
         return tap
@@ -75,9 +81,15 @@ final public class ZKCarousel: UIView {
         visibleRect.size = collectionView.bounds.size
         let visiblePoint = CGPoint(x: visibleRect.midX, y: visibleRect.midY)
         let visibleIndexPath: IndexPath = collectionView.indexPathForItem(at: visiblePoint)!
-        let index = visibleIndexPath.item
 
-        // TODO: inform delegate
+        let index = visibleIndexPath.item
+        let indexPath = IndexPath(item: index, section: 0)
+        if let cell = self.collectionView.cellForItem(at: indexPath) as? carouselCollectionViewCell {
+            let imageView = cell.imageView
+            if let delegate = self.delegate {
+                delegate.imageViewTapped(carousel: self, imageView: imageView)
+            }
+        }
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -100,7 +112,8 @@ extension ZKCarousel: UICollectionViewDelegateFlowLayout {
 extension ZKCarousel: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView,
                                cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "slideCell", for: indexPath) as! carouselCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "slideCell",
+                                                      for: indexPath) as! carouselCollectionViewCell
         cell.slide = self.slides[indexPath.item]
         return cell
     }
@@ -128,7 +141,7 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private lazy var imageView : UIImageView = {
+    fileprivate lazy var imageView : UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.backgroundColor = .clear
