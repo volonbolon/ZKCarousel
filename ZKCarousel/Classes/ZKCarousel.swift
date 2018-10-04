@@ -229,7 +229,6 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
 }
 
 final public class ZKCarouselSlide : NSObject {
-    
     public var slideImage : UIImage?
     public var slideTitle : String?
     public var slideDescription: String?
@@ -243,7 +242,14 @@ final public class ZKCarouselSlide : NSObject {
     override init() {
         super.init()
     }
-    
+}
+
+extension ZKCarousel {
+    public func scrollToSlide(index: Int) {
+        self.pageControl.currentPage = index
+        let indexPathToShow = IndexPath(item: index, section: 0)
+        self.collectionView.selectItem(at: indexPathToShow, animated: true, scrollPosition: .centeredHorizontally)
+    }
 }
 
 extension UIView {
