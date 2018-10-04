@@ -8,8 +8,7 @@
 
 import UIKit
 
-final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
-    
+final public class ZKCarousel: UIView {
     private lazy var tapGesture : UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler(tap:)))
         return tap
@@ -77,46 +76,44 @@ final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICol
         let visiblePoint = CGPoint(x: visibleRect.midX, y: visibleRect.midY)
         let visibleIndexPath: IndexPath = collectionView.indexPathForItem(at: visiblePoint)!
         let index = visibleIndexPath.item
-        print(index)
-        
-        if index == (slides.count-1) {
-            let indexPathToShow = IndexPath(item: 0, section: 0)
-            self.collectionView.selectItem(at: indexPathToShow, animated: true, scrollPosition: .centeredHorizontally)
-        } else {
-            let indexPathToShow = IndexPath(item: (index + 1), section: 0)
-            self.collectionView.selectItem(at: indexPathToShow, animated: true, scrollPosition: .centeredHorizontally)
-        }
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "slideCell", for: indexPath) as! carouselCollectionViewCell
-        cell.slide = self.slides[indexPath.item]
-        return cell
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(slides.count)
-        return self.slides.count
-    }
-    
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
-        return size
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
+
+        // TODO: inform delegate
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let pageNumber = round(scrollView.contentOffset.x / scrollView.frame.size.width)
         pageControl.currentPage = Int(pageNumber)
     }
-    
+}
+
+extension ZKCarousel: UICollectionViewDelegateFlowLayout {
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let size = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        return size
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+}
+
+extension ZKCarousel: UICollectionViewDataSource {
+    public func collectionView(_ collectionView: UICollectionView,
+                               cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "slideCell", for: indexPath) as! carouselCollectionViewCell
+        cell.slide = self.slides[indexPath.item]
+        return cell
+    }
+
+    public func collectionView(_ collectionView: UICollectionView,
+                               numberOfItemsInSection section: Int) -> Int {
+        print(slides.count)
+        return self.slides.count
+    }
+
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
 }
 
 fileprivate class carouselCollectionViewCell: UICollectionViewCell {
@@ -178,10 +175,34 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
         self.addConstraintsWithFormat("V:|[v0]|", views: self.imageView)
         
         self.addSubview(self.descriptionLabel)
-        let left = NSLayoutConstraint(item: descriptionLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 15)
-        let right = NSLayoutConstraint(item: descriptionLabel, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -15)
-        let bottom = NSLayoutConstraint(item: descriptionLabel, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 0.9, constant: 0)
-        let top = NSLayoutConstraint(item: descriptionLabel, attribute: .top, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.25, constant: 0)
+        let left = NSLayoutConstraint(item: descriptionLabel,
+                                      attribute: .left,
+                                      relatedBy: .equal,
+                                      toItem: self,
+                                      attribute: .left,
+                                      multiplier: 1.0,
+                                      constant: 15)
+        let right = NSLayoutConstraint(item: descriptionLabel,
+                                       attribute: .right,
+                                       relatedBy: .equal,
+                                       toItem: self,
+                                       attribute: .right,
+                                       multiplier: 1.0,
+                                       constant: -15)
+        let bottom = NSLayoutConstraint(item: descriptionLabel,
+                                        attribute: .bottom,
+                                        relatedBy: .equal,
+                                        toItem: self,
+                                        attribute: .bottom,
+                                        multiplier: 0.9,
+                                        constant: 0)
+        let top = NSLayoutConstraint(item: descriptionLabel,
+                                     attribute: .top,
+                                     relatedBy: .equal,
+                                     toItem: self,
+                                     attribute: .centerY,
+                                     multiplier: 1.25,
+                                     constant: 0)
         NSLayoutConstraint.activate([left, right, bottom, top])
         
         self.addSubview(self.titleLabel)
@@ -226,7 +247,6 @@ final public class ZKCarouselSlide : NSObject {
 }
 
 extension UIView {
-    
     func addConstraintsWithFormat(_ format: String, views: UIView...) {
         
         var viewsDictionary = [String: UIView]()
@@ -238,8 +258,6 @@ extension UIView {
         
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutFormatOptions(), metrics: nil, views: viewsDictionary))
     }
-    
-    
 }
 
 extension UIImageView {
