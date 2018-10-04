@@ -141,7 +141,7 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    private lazy var imageView : UIImageView = {
+    fileprivate lazy var imageView : UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.backgroundColor = .clear
