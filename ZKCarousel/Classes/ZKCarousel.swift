@@ -76,7 +76,9 @@ final public class ZKCarousel: UIView {
         self.addSubview(pageControl)
         self.addConstraintsWithFormat("H:|-20-[v0]-20-|", views: pageControl)
         self.addConstraintsWithFormat("V:[v0(25)]-5-|", views: pageControl)
-        self.bringSubviewToFront(pageControl)
+        self.bringSubview(toFront: pageControl)
+
+        self.collectionView.addGestureRecognizer(self.tapGesture)
     }
 
     @objc private func tapGestureHandler(tap: UITapGestureRecognizer?) {
@@ -230,7 +232,6 @@ final public class ZKCarouselSlide : NSObject {
     override init() {
         super.init()
     }
-
 }
 
 extension UIView {
