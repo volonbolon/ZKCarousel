@@ -12,7 +12,7 @@ public protocol ZKCarouselDelegate: class {
     func imageViewTapped(carousel: ZKCarousel, imageView: UIImageView)
 }
 
-final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource {
+final public class ZKCarousel: UIView {
     public weak var delegate: ZKCarouselDelegate?
     public var slides : [ZKCarouselSlide] = [] {
         didSet {
@@ -73,7 +73,9 @@ final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICol
         self.addConstraintsWithFormat("V:[v0(25)]-5-|", views: pageControl)
         self.bringSubview(toFront: pageControl)
     }
+}
 
+extension ZKCarousel: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "slideCell", for: indexPath) as! carouselCollectionViewCell
         cell.slide = self.slides[indexPath.item]
@@ -87,7 +89,9 @@ final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICol
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
+}
 
+extension ZKCarousel: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         return size
@@ -101,7 +105,6 @@ final public class ZKCarousel: UIView, UICollectionViewDelegateFlowLayout, UICol
         let pageNumber = round(scrollView.contentOffset.x / scrollView.frame.size.width)
         pageControl.currentPage = Int(pageNumber)
     }
-
 }
 
 fileprivate class carouselCollectionViewCell: UICollectionViewCell {
