@@ -20,6 +20,11 @@ final public class ZKCarousel: UIView {
         }
     }
 
+    private lazy var tapGesture : UITapGestureRecognizer = {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler(tap:)))
+        return tap
+    }()
+
     public lazy var pageControl : UIPageControl = {
         let control = UIPageControl()
         control.numberOfPages = 3
@@ -71,7 +76,24 @@ final public class ZKCarousel: UIView {
         self.addSubview(pageControl)
         self.addConstraintsWithFormat("H:|-20-[v0]-20-|", views: pageControl)
         self.addConstraintsWithFormat("V:[v0(25)]-5-|", views: pageControl)
-        self.bringSubview(toFront: pageControl)
+        self.bringSubviewToFront(pageControl)
+    }
+
+    @objc private func tapGestureHandler(tap: UITapGestureRecognizer?) {
+        var visibleRect = CGRect()
+        visibleRect.origin = collectionView.contentOffset
+        visibleRect.size = collectionView.bounds.size
+        let visiblePoint = CGPoint(x: visibleRect.midX, y: visibleRect.midY)
+        let visibleIndexPath: IndexPath = collectionView.indexPathForItem(at: visiblePoint) ?? IndexPath(item: 0, section: 0)
+        let index = visibleIndexPath.item
+
+        let indexPath = IndexPath(item: index, section: 0)
+        if let cell = self.collectionView.cellForItem(at: indexPath) as? carouselCollectionViewCell {
+            let imageView = cell.imageView
+            if let delegate = self.delegate {
+                delegate.imageViewTapped(carousel: self, imageView: imageView)
+            }
+        }
     }
 }
 
