@@ -143,10 +143,9 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
     
     fileprivate lazy var imageView : UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
+        iv.contentMode = .scaleAspectFit
         iv.backgroundColor = .clear
         iv.clipsToBounds = true
-        iv.addBlackGradientLayer(frame: self.bounds)
         return iv
     }()
     
@@ -276,15 +275,5 @@ extension UIView {
         }
         
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutFormatOptions(), metrics: nil, views: viewsDictionary))
-    }
-}
-
-extension UIImageView {
-    func addBlackGradientLayer(frame: CGRect){
-        let gradient = CAGradientLayer()
-        gradient.frame = frame
-        gradient.colors = [UIColor.clear.cgColor, UIColor.black.withAlphaComponent(0.8).cgColor]
-        gradient.locations = [0.0, 0.6]
-        self.layer.insertSublayer(gradient, at: 0)
     }
 }
