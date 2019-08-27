@@ -160,6 +160,14 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
         return label
     }()
 
+    private var scrollView: UIScrollView = {
+        let scrollView = UIScrollView(frame: .zero)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.maximumZoomScale = 2.0
+
+        return scrollView
+    }()
+
     private var descriptionLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 19)
@@ -173,20 +181,26 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setup()
+        setup(frame: frame)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setup() {
+    private func setup(frame: CGRect) {
         self.backgroundColor = .clear
         self.clipsToBounds = true
 
-        self.addSubview(self.imageView)
-        self.addConstraintsWithFormat("H:|[v0]|", views: self.imageView)
-        self.addConstraintsWithFormat("V:|[v0]|", views: self.imageView)
+        self.addSubview(self.scrollView)
+
+        self.scrollView.addSubview(self.imageView)
+        self.scrollView.delegate = self
+
+        self.addConstraintsWithFormat("H:|[v0]|", views: self.scrollView)
+        self.addConstraintsWithFormat("V:|[v0]|", views: self.scrollView)
+
+        self.imageView.frame = frame
 
         self.addSubview(self.descriptionLabel)
         let left = NSLayoutConstraint(item: descriptionLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 15)
@@ -214,6 +228,12 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
         }
 
         return
+    }
+}
+
+extension carouselCollectionViewCell: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.imageView
     }
 }
 
