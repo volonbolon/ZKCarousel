@@ -194,13 +194,13 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
 
         self.addSubview(self.scrollView)
 
+        self.imageView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.height)
         self.scrollView.addSubview(self.imageView)
+
         self.scrollView.delegate = self
 
         self.addConstraintsWithFormat("H:|[v0]|", views: self.scrollView)
         self.addConstraintsWithFormat("V:|[v0]|", views: self.scrollView)
-
-        self.imageView.frame = frame
 
         self.addSubview(self.descriptionLabel)
         let left = NSLayoutConstraint(item: descriptionLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 15)
@@ -231,12 +231,6 @@ fileprivate class carouselCollectionViewCell: UICollectionViewCell {
     }
 }
 
-extension carouselCollectionViewCell: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return self.imageView
-    }
-}
-
 final public class ZKCarouselSlide : NSObject {
 
     public var slideImage : UIImage?
@@ -251,6 +245,12 @@ final public class ZKCarouselSlide : NSObject {
 
     override init() {
         super.init()
+    }
+}
+
+extension carouselCollectionViewCell: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.imageView
     }
 }
 
